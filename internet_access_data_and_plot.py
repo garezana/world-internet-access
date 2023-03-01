@@ -43,9 +43,35 @@ print(internet_country_df["percent_of_population"][1:].median(skipna=True))
 # Plotting map
 wm = World()
 wm.force_uri_protocol = 'http'
-wm.title = "World Map of Internet Access"
+wm.title = "Percentage of Population with Internet Access by Country "
+
 
 all_countries_internet_access = internet_country_df[[
     'country_code', 'percent_of_population']].set_index('country_code').T.to_dict("records")
-wm.add('Internet Access', all_countries_internet_access[0])
-wm.render_to_file(path / Path("internet_world_map_2019.svg"))
+
+first_quart= {}
+second_quart={}
+third_quart={}
+fourth_quart={}
+for country, percentage in all_countries_internet_access[0].items():
+    if percentage < 24.99:
+        first_quart[country]=(percentage)
+    if percentage > 24.99 and percentage < 49.99:
+        second_quart[country]=(percentage)
+    if percentage > 49.99 and percentage < 74.99:
+        third_quart[country]=(percentage)
+    if percentage > 74.99:
+        fourth_quart[country]=(percentage)
+
+
+wm.add('75% - 100%', fourth_quart)
+wm.add('50% - 74.99%', third_quart)
+wm.add('25% - 49.99%', second_quart)
+wm.add('0% - 24.99%',first_quart )
+
+
+
+
+
+#wm.add('Internet Access', all_countries_internet_access[0])
+wm.render_to_file(("internet_world_map_2019.svg"))
